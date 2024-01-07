@@ -84,6 +84,16 @@
                                             @endif
                                         </div>
                                     </div>
+                                    <div class="form-group row">
+                                        <label  class="col-sm-2 control-label">{{ __('Description') }}<span class="text-danger">*</span></label>
+        
+                                        <div class="col-sm-10">
+                                            <textarea name="description" class="form-control summernote" placeholder="{{ __('Description') }}" rows="7">{{ old('description') }}</textarea>
+                                            @if ($errors->has('description'))
+                                                <p class="text-danger"> {{ $errors->first('description') }} </p>
+                                            @endif
+                                        </div>
+                                    </div>
 
                                     <div class="form-group row">
                                         <label for="icon1" class="col-sm-2 control-label">{{ __('Social Icon 1') }}<span class="d-block"><small>{{ __('(Fontawesome icon class )') }}</small></span></label>

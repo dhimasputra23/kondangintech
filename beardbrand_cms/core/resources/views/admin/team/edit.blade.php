@@ -51,7 +51,7 @@
                                         <label for="title" class="col-sm-2 control-label">{{ __('Image') }}<span class="text-danger">*</span></label>
 
                                         <div class="col-sm-10">
-                                            <img class="w-100 mb-3 show-img img-demo" src="{{ $team->image ? asset('assets/front/img/'.$team->image) : asset('assets/admin/img/img-demo.jpg') }}" alt="">
+                                            <img class="w-100 mb-3 show-img img-demo" src="{{ $team->image ? asset('assets/kondangintech-landing/img/'.$team->image) : asset('assets/admin/img/img-demo.jpg') }}" alt="">
                                             <div class="custom-file">
                                                 <label class="custom-file-label" for="image">{{ __('Choose Image') }}</label>
                                                 <input type="file" class="custom-file-input up-img" name="image" id="image">
@@ -81,6 +81,16 @@
                                             <input type="text" class="form-control" name="dagenation" placeholder="{{ __('Dagenation') }}" value="{{ $team->dagenation }}">
                                             @if ($errors->has('dagenation'))
                                                 <p class="text-danger"> {{ $errors->first('dagenation') }} </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label  class="col-sm-2 control-label">{{ __('Description') }}<span class="text-danger">*</span></label>
+        
+                                        <div class="col-sm-10">
+                                            <textarea name="description" class="form-control summernote" placeholder="{{ __('Description') }}" rows="7">{{ $team->description }}</textarea>
+                                            @if ($errors->has('description'))
+                                                <p class="text-danger"> {{ $errors->first('description') }} </p>
                                             @endif
                                         </div>
                                     </div>

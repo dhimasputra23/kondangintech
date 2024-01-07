@@ -66,7 +66,7 @@ class ServiceController extends Controller
             $file = $request->file('icon');
             $extension = $file->getClientOriginalExtension();
             $icon = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $icon);
+            $file->move('assets/kondangintech-landing/img/', $icon);
 
             $service->icon = $icon;
         }
@@ -75,7 +75,7 @@ class ServiceController extends Controller
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
             $image = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $image);
+            $file->move('assets/kondangintech-landing/img/', $image);
 
             $service->image = $image;
         }
@@ -99,7 +99,7 @@ class ServiceController extends Controller
     public function delete($id){
 
         $service = Service::find($id);
-        @unlink('assets/front/img/'. $service->icon);
+        @unlink('assets/kondangintech-landing/img/'. $service->icon);
         $service->delete();
 
         return back();
@@ -140,21 +140,21 @@ class ServiceController extends Controller
         ]);
 
         if($request->hasFile('icon')){
-            @unlink('assets/front/img/'. $service->icon);
+            @unlink('assets/kondangintech-landing/img/'. $service->icon);
             $file = $request->file('icon');
             $extension = $file->getClientOriginalExtension();
             $icon = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $icon);
+            $file->move('assets/kondangintech-landing/img/', $icon);
 
             $service->icon = $icon;
         }
 
         if($request->hasFile('image')){
-            @unlink('assets/front/img/'. $service->image);
+            @unlink('assets/kondangintech-landing/img/'. $service->image);
             $file = $request->file('image');
             $extension = $file->getClientOriginalExtension();
             $image = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $image);
+            $file->move('assets/kondangintech-landing/img/', $image);
 
             $service->image = $image;
         }
@@ -177,7 +177,7 @@ class ServiceController extends Controller
         
         $request->validate([
             'service_title' => 'required',
-            'service_subtitle' => 'required',
+            // 'service_subtitle' => 'required',
         ]);
 
         $service_title = Sectiontitle::where('language_id', $id)->first();

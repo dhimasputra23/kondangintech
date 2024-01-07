@@ -57,7 +57,7 @@
                                     {{ $id }}
                                 </td>
                                 <td>
-                                    <img class="w-80" src="{{ asset('assets/front/img/'.$team->image) }}" alt="">
+                                    <img class="w-80" src="{{ asset('assets/kondangintech-landing/img/'.$team->image) }}" alt="">
                                 </td>
                                 <td>{{ $team->name }}</td>
                                 <td>{{ $team->dagenation}}</td>

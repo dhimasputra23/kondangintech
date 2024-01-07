@@ -58,7 +58,7 @@
 
                 <div class="form-group {{ $errors->has('purchase_code') ? ' has-error ' : '' }}">
                     <label for="purchase_code">
-                        Purchase Code | NULLCAVE.club
+                        Purchase Code
                     </label>
                     <input type="text" name="purchase_code" id="purchase_code" value="" placeholder="Your Item Purchase Code" />
                     @if ($errors->has('purchase_code'))

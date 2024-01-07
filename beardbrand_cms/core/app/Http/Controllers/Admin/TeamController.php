@@ -7,6 +7,7 @@ use App\Language;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use Mews\Purifier\Facades\Purifier;
 
 class TeamController extends Controller
 {
@@ -36,7 +37,8 @@ class TeamController extends Controller
         $request->validate([
             'image' => 'required|mimes:jpeg,jpg,png',
             'name' => 'required|max:100',
-            'dagenation' => 'required|max:100'
+            'dagenation' => 'required|max:100',
+            'description' => 'required'
         ]);
         
         $team = new Team();
@@ -55,6 +57,7 @@ class TeamController extends Controller
         $team->name = $request->name;
         $team->status = $request->status;
         $team->dagenation = $request->dagenation;
+        $team->description = Purifier::clean($request->description);
 
         if($request->icon1 && $request->url1){
             $team->icon1 = $request->icon1;
@@ -114,7 +117,8 @@ class TeamController extends Controller
         $request->validate([
             'image' => 'mimes:jpeg,jpg,png',
             'name' => 'required|max:100',
-            'dagenation' => 'required|max:100'
+            'dagenation' => 'required|max:100',
+            'description' => 'required',
         ]);
 
         $team = Team::findOrFail($id);
@@ -134,6 +138,7 @@ class TeamController extends Controller
         $team->name = $request->name;
         $team->status = $request->status;
         $team->dagenation = $request->dagenation;
+        $team->description = Purifier::clean($request->description);
 
         if($request->icon1 && $request->url1){
             $team->icon1 = $request->icon1;

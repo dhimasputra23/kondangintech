@@ -32,10 +32,10 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <form class="form-horizontal" action="{{ route('admin.package.update',  $package->id) }}" method="POST">
+                                <form class="form-horizontal" action="{{ route('admin.package.update',  $package->id) }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="form-group row">
-                                        <label class="col-sm-2 control-label">{{ __('Name') }}<span class="text-danger">*</span></label>
+                                        <label class="col-sm-2 control-label">{{ __('Language') }}<span class="text-danger">*</span></label>
         
                                         <div class="col-sm-10">
                                             <select class="form-control lang" name="language_id">
@@ -58,7 +58,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="form-group row">
+                                    {{-- <div class="form-group row">
                                         <label  class="col-sm-2 control-label">{{ __('Speed') }}<span class="text-danger">*</span></label>
         
                                         <div class="col-sm-10">
@@ -67,8 +67,26 @@
                                                 <p class="text-danger"> {{ $errors->first('speed') }} </p>
                                             @endif
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group row">
+                                        <label class="col-sm-2 control-label">{{ __('Package Image') }}<span class="text-danger">*</span></label>
+                                        <div class="col-sm-10">
+                                            <img class="mw-400 mb-3 show-img img-demo" src="
+                                            @if($package->image)
+                                            {{ asset('assets/kondangintech-landing/img/'.$package->image) }}
+                                            @else
+                                            {{ asset('assets/admin/img/img-demo.jpg') }}
+                                            @endif" alt="">
+                                            <div class="custom-file">
+                                                <label class="custom-file-label" for="image">Choose New Image</label>
+                                                <input type="file" class="custom-file-input up-img" name="image" id="image">
+                                            </div>
+                                            <p class="help-block text-info">{{ __('Upload 1920X900 (Pixel) Size image for best quality.
+                                                Only jpg, jpeg, png image is allowed.') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {{-- <div class="form-group row">
                                         <label  class="col-sm-2 control-label">{{ __('Time') }}<span class="text-danger">*</span></label>
         
                                         <div class="col-sm-10">
@@ -77,7 +95,7 @@
                                                 <p class="text-danger"> {{ $errors->first('time') }} </p>
                                             @endif
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group row">
                                         <label  class="col-sm-2 control-label">{{ __('Price') }}<span class="text-danger">*</span></label>
         
@@ -95,6 +113,26 @@
                                             <input type="number" class="form-control" name="discount_price" placeholder="{{ __('Discount Price') }}" value="{{ $package->discount_price }}">
                                             @if ($errors->has('discount_price'))
                                                 <p class="text-danger"> {{ $errors->first('discount_price') }} </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label  class="col-sm-2 control-label">{{ __('Start Price') }}<span class="text-danger">*</span></label>
+        
+                                        <div class="col-sm-10">
+                                            <input type="number" class="form-control" name="start_price" placeholder="{{ __('Start Price') }}" value="{{ $package->start_price }}">
+                                            @if ($errors->has('start_price'))
+                                                <p class="text-danger"> {{ $errors->first('start_price') }} </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label  class="col-sm-2 control-label">{{ __('End Price') }}<span class="text-danger">*</span></label>
+        
+                                        <div class="col-sm-10">
+                                            <input type="number" class="form-control" name="end_price" placeholder="{{ __('End Price') }}" value="{{ $package->end_price }}">
+                                            @if ($errors->has('end_price'))
+                                                <p class="text-danger"> {{ $errors->first('end_price') }} </p>
                                             @endif
                                         </div>
                                     </div>

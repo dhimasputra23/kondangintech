@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="logo text-center" style="margin-bottom: 20px; padding-top: 30px;">
-                        <img src="{{str_replace ( 'core' , '' , base_path() ) . '/assets/front/img/' . $commonsetting->header_logo}}" alt="">
+                        <img src="{{str_replace ( 'core' , '' , base_path() ) . 'assets/front/img/' . $commonsetting->header_logo}}" alt="">
                     </div>
 
                     <div class="confirmation-message bg-primary" style="padding: 5px 0px;margin-bottom: 40px;">
@@ -45,7 +45,7 @@
                                   </tr>
                                     <tr>
                                     <th scope="row">Bill Price:</th>
-                                    <td>{{ Helper::showCurrency() }}{{$bill->package_cost}}</td>
+                                    <td>{{ Helper::showCurrency() }}{{$order->package_cost}}</td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Payment Method:</th>

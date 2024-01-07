@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Blog;
-use App\Package;
-use App\Product;
-use App\Service;
 use App\Setting;
 use App\Language;
 use App\Sectiontitle;
-use App\Testimonial;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
@@ -229,29 +224,6 @@ class LanguageController extends Controller
         $sectiontitle->delete();
         $setting = Setting::where('language_id', $id)->first();
         $setting->delete();
-
-        $blogs = Blog::where('language_id', $id)->get();
-        $packages = Package::where('language_id', $id)->get();
-        $services = Service::where('language_id', $id)->get();
-        $products = Product::where('language_id', $id)->get();
-        $testimonials = Testimonial::where('language_id', $id)->get();
-
-        foreach ( $blogs as $item){
-            $item->delete();
-        }
-        foreach ( $packages as $item){
-            $item->delete();
-        }
-        foreach ( $services as $item){
-            $item->delete();
-        }
-        foreach ( $products as $item){
-            $item->delete();
-        }
-        foreach ( $testimonials as $item){
-            $item->delete();
-        }
-
         $la->delete();
 
         $notification = array(

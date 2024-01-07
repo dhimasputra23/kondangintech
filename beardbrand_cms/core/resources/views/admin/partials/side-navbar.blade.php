@@ -7,8 +7,8 @@
     <div class="sidebar pt-0 mt-0">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel">
-            <a href="{{ route('front.index') }}" class="name text-dark" target="_blank">
-                <img src="{{ asset('assets/front/img/'.$commonsetting->header_logo) }}" alt="">
+            <a href="{{ route('front.index') }}" class="name text-dark" target="_blank" style="padding-left: 0px;text-align: center">
+                <img src="{{ asset('assets/kondangintech-landing/img/'.$commonsetting->header_logo) }}" alt="">
             </a>
         </div>
         <!-- Sidebar Menu -->
@@ -200,6 +200,7 @@
                                 </p>
                             </a>
                         </li>
+                        <!--
                         <li class="nav-item">
                             <a href="{{ route('admin.package.allorder')}}"
                                class="nav-link @if(request()->path() == 'admin/package/all-order') active @endif">
@@ -230,8 +231,10 @@
                                 <p>{{ __('Completed Order') }}</p>
                             </a>
                         </li>
+                    -->
                     </ul>
                 </li>
+                <!--
                 <li class="nav-item has-treeview
         @if(request()->path() == 'admin/product') menu-open
         @elseif(request()->path() == 'admin/product/add') menu-open
@@ -314,6 +317,8 @@
                         </li>
                     </ul>
                 </li>
+            -->
+            <!--
                 <li class="nav-item has-treeview
                 @if(request()->path() == 'admin/bill-pay') menu-open
                 @elseif(request()->path() == 'admin/add') menu-open
@@ -350,6 +355,8 @@
                       </li>
                     </ul>
                   </li>
+                -->
+                <!--
                 <li class="nav-item">
                     <a href="{{ route('admin.slider'). '?language=' . $lang_code }}" class="nav-link
             @if(request()->path() == 'admin/slider') active
@@ -359,6 +366,18 @@
                         <i class="nav-icon fas fa-sliders-h"></i>
                         <p>
                             {{ __('Slider') }}
+                        </p>
+                    </a>
+                </li>
+            -->
+                <li class="nav-item">
+                    <a href="{{ route('admin.hero'). '?language=' . $lang_code }}" class="nav-link
+            @if(request()->path() == 'admin/hero') active
+
+            @endif">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            {{ __('Hero') }}
                         </p>
                     </a>
                 </li>
@@ -376,6 +395,54 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.value'). '?language=' . $lang_code }}" class="nav-link
+            @if(request()->path() == 'admin/value') active
+            @elseif(request()->path() == 'admin/value/add') active
+            @elseif(request()->is('admin/about/value/*')) active
+            @endif">
+                        <i class="nav-icon fas fa-star"></i>
+                        <p>
+                            {{ __('Value') }}
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.feature1'). '?language=' . $lang_code }}" class="nav-link
+            @if(request()->path() == 'admin/feature-1') active
+            @elseif(request()->is('admin/about/feature-1/*')) active
+            @endif">
+                        <i class="nav-icon fas fa-laptop-code"></i>
+                        <p>
+                            {{ __('Feature-1') }}
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.feature2'). '?language=' . $lang_code }}" class="nav-link
+            @if(request()->path() == 'admin/feature-2') active
+            @elseif(request()->path() == 'admin/feature-2/add') active
+            @elseif(request()->is('admin/about/feature-2/*')) active
+            @endif">
+                        <i class="nav-icon fas fa-laptop-code"></i>
+                        <p>
+                            {{ __('Feature-2') }}
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.feature3'). '?language=' . $lang_code }}" class="nav-link
+            @if(request()->path() == 'admin/feature-3') active
+            @elseif(request()->path() == 'admin/feature-3/add') active
+            @elseif(request()->is('admin/about/feature-3/*')) active
+            @endif">
+                        <i class="nav-icon fas fa-laptop-code"></i>
+                        <p>
+                            {{ __('Feature-3') }}
+                        </p>
+                    </a>
+                </li>
+                <!--
+                <li class="nav-item">
                     <a href="{{ route('admin.offer'). '?language=' . $lang_code }}" class="nav-link
             @if(request()->path() == 'admin/offer') active
             @elseif(request()->path() == 'admin/offer/add') active
@@ -387,6 +454,7 @@
                         </p>
                     </a>
                 </li>
+            -->
                 <li class="nav-item">
                     <a href="{{ route('admin.funfact'). '?language=' . $lang_code }}" class="nav-link
             @if(request()->path() == 'admin/funfact') active
@@ -423,6 +491,7 @@
                         </p>
                     </a>
                 </li>
+                <!--
                 <li class="nav-item has-treeview
                     @if(request()->path() == 'admin/entertainment') menu-open
                     @elseif(request()->is('admin/entertainment/edit/*')) menu-open
@@ -466,6 +535,8 @@
                         </li>
                     </ul>
                 </li>
+            -->
+                <!--
                 <li class="nav-item">
                     <a href="{{ route('admin.branch'). '?language=' . $lang_code }}" class="nav-link
             @if(request()->path() == 'admin/branch') active
@@ -478,6 +549,7 @@
                         </p>
                     </a>
                 </li>
+            -->
                 <li class="nav-item">
                     <a href="{{ route('admin.team'). '?language=' . $lang_code}}" class="nav-link
             @if(request()->path() == 'admin/team') active
@@ -487,6 +559,18 @@
                         <i class="nav-icon fas fa-users"></i>
                         <p>
                             {{ __('Team') }}
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.clients'). '?language=' . $lang_code}}" class="nav-link
+            @if(request()->path() == 'admin/clients') active
+            @elseif(request()->path() == 'admin/clients/add') active
+            @elseif(request()->is('admin/clients/edit/*')) active
+            @endif">
+                        <i class="nav-icon fas fa-handshake"></i>
+                        <p>
+                            {{ __('Clients') }}
                         </p>
                     </a>
                 </li>

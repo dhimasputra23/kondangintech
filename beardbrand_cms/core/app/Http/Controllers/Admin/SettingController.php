@@ -34,37 +34,47 @@ class SettingController extends Controller
             'contactemail' => 'required|max:250',
             'base_color' => 'required',
             'header_logo' => 'mimes:jpeg,jpg,png',
+            'company_logo' => 'mimes:jpeg,jpg,png',
             'fav_icon' => 'mimes:jpeg,jpg,png',
             'breadcrumb_image' => 'mimes:jpeg,jpg,png'
          ]);
 
       
          $commoninfo = Setting::where('id', 1)->first();
+
+         if($request->hasFile('company_logo')){
+            @unlink('assets/kondangintech-landing/img/'. $commoninfo->company_logo);
+            $file = $request->file('company_logo');
+            $extension = $file->getClientOriginalExtension();
+            $company_logo = 'header_logo_'.time().rand().'.'.$extension;
+            $file->move('assets/kondangintech-landing/img/', $company_logo);
+            $commoninfo->company_logo = $company_logo;
+        }
        
          if($request->hasFile('header_logo')){
-            @unlink('assets/front/img/'. $commoninfo->header_logo);
+            @unlink('assets/kondangintech-landing/img/'. $commoninfo->header_logo);
             $file = $request->file('header_logo');
             $extension = $file->getClientOriginalExtension();
             $header_logo = 'header_logo_'.time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $header_logo);
+            $file->move('assets/kondangintech-landing/img/', $header_logo);
             $commoninfo->header_logo = $header_logo;
         }
         
          if($request->hasFile('fav_icon')){
-            @unlink('assets/front/img/'. $commoninfo->fav_icon);
+            @unlink('assets/kondangintech-landing/img/'. $commoninfo->fav_icon);
             $file = $request->file('fav_icon');
             $extension = $file->getClientOriginalExtension();
             $fav_icon = 'fav_icon_'.time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $fav_icon);
+            $file->move('assets/kondangintech-landing/img/', $fav_icon);
             $commoninfo->fav_icon = $fav_icon;
         }
 
          if($request->hasFile('breadcrumb_image')){
-            @unlink('assets/front/img/'. $commoninfo->breadcrumb_image);
+            @unlink('assets/kondangintech-landing/img/'. $commoninfo->breadcrumb_image);
             $file = $request->file('breadcrumb_image');
             $extension = $file->getClientOriginalExtension();
             $breadcrumb_image = 'breadcrumb_image_'.'.'.$extension;
-            $file->move('assets/front/img/', $breadcrumb_image);
+            $file->move('assets/kondangintech-landing/img/', $breadcrumb_image);
             $commoninfo->breadcrumb_image = $breadcrumb_image;
         }
 

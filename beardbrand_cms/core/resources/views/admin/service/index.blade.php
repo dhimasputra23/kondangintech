@@ -110,7 +110,7 @@
                                     {{ $id }}
                                 </td>
                                 <td>
-                                    <img class="w-80" src="{{ asset('assets/front/img/'.$service->icon) }}" alt="">
+                                    <img class="w-80" src="{{ asset('assets/kondangintech-landing/img/'.$service->icon) }}" alt="">
                                 </td>
                                 <td>
                                     {{ $service->name }}

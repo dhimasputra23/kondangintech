@@ -6,7 +6,6 @@ use App\Product;
 use App\Language;
 use App\Shipping;
 use App\OrderItem;
-use Omnipay\Omnipay;
 use PayPal\Api\Item;
 use App\Emailsetting;
 use App\ProductOrder;
@@ -22,7 +21,7 @@ use Illuminate\Http\Request;
 use PayPal\Api\RedirectUrls;
 use Illuminate\Support\Carbon;
 use PayPal\Api\PaymentExecution;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade as PDF;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Http\Controllers\Controller;
@@ -38,34 +37,34 @@ class PaypalController extends Controller
     {
         $data = PaymentGatewey::whereKeyword('paypal')->first();
         $paydata = $data->convertAutoData();
-
-//        $paypal_conf = \Config::get('paypal');
-//        $paypal_conf['client_id'] = $paydata['client_id'];
-//        $paypal_conf['secret'] = $paydata['client_secret'];
-//        $paypal_conf['settings']['mode'] = $paydata['sandbox_check'] == 1 ? 'sandbox' : 'live';
-//        $this->_api_context = new ApiContext(
-//            new OAuthTokenCredential(
-//                $paypal_conf['client_id'],
-//                $paypal_conf['secret']
-//            )
-//        );
-//        $this->_api_context->setConfig($paypal_conf['settings']);
-        $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId($paydata['client_id']);
-        $this->gateway->setSecret($paydata['client_secret']);
-        $this->gateway->setTestMode(true);
+        $paypal_conf = \Config::get('paypal');
+        $paypal_conf['client_id'] = $paydata['client_id'];
+        $paypal_conf['secret'] = $paydata['client_secret'];
+        $paypal_conf['settings']['mode'] = $paydata['sandbox_check'] == 1 ? 'sandbox' : 'live';
+        $this->_api_context = new ApiContext(
+            new OAuthTokenCredential(
+                $paypal_conf['client_id'],
+                $paypal_conf['secret']
+            )
+        );
+        $this->_api_context->setConfig($paypal_conf['settings']);
     }
 
     public function store(Request $request)
     {
 
-
+         
+     
+        
         if (!Session::has('cart')) {
             return view('errors.404');
         }
+  
 
         $cart = Session::get('cart');
 
+       
+      
 
         $total = 0;
         foreach ($cart as $id => $item) {
@@ -82,8 +81,8 @@ class PaypalController extends Controller
             $total  += $product->current_price * $item['qty'];
         }
 
+     
 
-        $shippig_charge = 0;
         if ($request->shipping_charge != 0) {
             $shipping = Shipping::where('cost', $request->shipping_charge)->first();
             $shipping_charge = $shipping->cost;
@@ -92,7 +91,6 @@ class PaypalController extends Controller
         }
 
         $total = round($total + $shipping_charge, 2);
-
 
         if(isset($request->is_ship)){
             $request->validate([
@@ -125,67 +123,76 @@ class PaypalController extends Controller
 
         $input = $request->all();
 
+   
+        $title = 'Product Checkout';
+
+        $order['order_number'] = Str::random(4) . time();
+
+        $order['order_amount'] = round($total, 2);
         $cancel_url = action('Payment\Product\PaypalController@paycancle');
         $notify_url = route('product.payment.notify');
+        $success_url = action('Payment\Product\PaypalController@payreturn');
 
 
-        $order['user_id'] = Auth::user()->id;
+        $payer = new Payer();
+        $payer->setPaymentMethod('paypal');
+        $item_1 = new Item();
+        $item_1->setName($title)
+            /** item name **/
+            ->setCurrency('USD')
+            ->setQuantity(1)
+            ->setPrice(round($total, 2));
+        /** unit price **/
+        $item_list = new ItemList();
+        $item_list->setItems(array($item_1));
+        $amount = new Amount();
+        $amount->setCurrency('USD')
+            ->setTotal(round($total, 2));
+        $transaction = new Transaction();
+        $transaction->setAmount($amount)
+            ->setItemList($item_list)
+            ->setDescription($title . ' Via Paypal');
+        $redirect_urls = new RedirectUrls();
+        $redirect_urls->setReturnUrl($notify_url)
+            /** Specify return URL **/
+            ->setCancelUrl($cancel_url);
+        $payment = new Payment();
+        $payment->setIntent('Sale')
+            ->setPayer($payer)
+            ->setRedirectUrls($redirect_urls)
+            ->setTransactions(array($transaction));
 
-        $order['billing_name'] = $request->billing_name;
-        $order['billing_email'] = $request->billing_email;
-        $order['billing_address'] = $request->billing_address;
-        $order['billing_city'] = $request->billing_city;
-        $order['billing_country'] = $request->billing_country;
-        $order['billing_number'] = $request->billing_number;
-        $order['billing_zip'] = $request->billing_zip;
-
-        $order['shipping_name'] = $request->shipping_name;
-        $order['shipping_email'] = $request->shipping_email;
-        $order['shipping_address'] = $request->shipping_address;
-        $order['shipping_city'] = $request->shipping_city;
-        $order['shipping_country'] = $request->shipping_country;
-        $order['shipping_number'] = $request->shipping_number;
-        $order['shipping_zip'] = $request->shipping_zip;
-
-        $order['total'] = $total;
-        $order['shipping_charge'] = round($shippig_charge, 2);
-        $order['method'] = 'Stripe';
-        $order['currency_code'] = 'USD';
-        $order['order_number'] = Str::random(4). time();
-        $order['payment_status'] = 'Completed';
-        $order['txnid'] = Str::random(12);
-        $order['charge_id'] = Str::random(12);
-
-        $order['billing_name'] = $input['billing_name'];
-
-        Session::put('order_data', $order);
-        Session::put('input', $input);
-
-        try{
-            $response = $this->gateway->purchase(array(
-                'amount' => $total,
-                'currency' => 'USD',
-                'returnUrl' => $notify_url,
-                'cancelUrl' => $cancel_url
-            ))->send();
-            if ($response->isRedirect()) {
-                if ($response->redirect()) {
-                    /** redirect to paypal **/
-                    return Redirect::away($response->redirect());
-                }else{
-                    return $response->getMessage();
-                }
-            }
-        }catch (\Throwable $th){
-            $notification = array(
-                'messege' => 'Payment Cancelled.',
-                'alert' => 'error'
-            );
-            return redirect()->back()->with('notification', $notification);
+        try {
+            $payment->create($this->_api_context);
+        } catch (\PayPal\Exception\PPConnectionException $ex) {
+            return redirect()->back()->with('unsuccess', $ex->getMessage());
         }
-
+        foreach ($payment->getLinks() as $link) {
+            if ($link->getRel() == 'approval_url') {
+                $redirect_url = $link->getHref();
+                break;
+            }
+        }
+        /** add payment ID to session **/
+        Session::put('paypal_data', $input);
+        Session::put('order_data', $order);
+        Session::put('paypal_payment_id', $payment->getId());
+        if (isset($redirect_url)) {
+            /** redirect to paypal **/
+            return Redirect::away($redirect_url);
+        }
         $notification = array(
-            'messege' => 'Payment Cancelled.',
+            'messege' => 'Unknown error occurred',
+            'alert' => 'error'
+        );
+        return redirect()->back()->with('notification', $notification);
+
+        if (isset($redirect_url)) {
+            /** redirect to paypal **/
+            return Redirect::away($redirect_url);
+        }
+        $notification = array(
+            'messege' => 'Unknown error occurred',
             'alert' => 'error'
         );
         return redirect()->back()->with('notification', $notification);
@@ -213,53 +220,89 @@ class PaypalController extends Controller
         $success_url = action('Payment\Product\PaypalController@payreturn');
         $cancel_url = action('Payment\Product\PaypalController@paycancle');
 
-        if (Session::has('cart')) {
+
+        $paypal_data = Session::get('paypal_data');
+
+
+        $order_data = Session::get('order_data');
+        $payment_id = Session::get('paypal_payment_id');
+
+        $input = $request->all();
+        /** Get the payment ID before session clear **/
+        /** clear the session payment ID **/
+        if (empty($input['PayerID']) || empty($input['token'])) {
+            return redirect($cancel_url);
+        }
+        $payment = Payment::get($payment_id, $this->_api_context);
+        $execution = new PaymentExecution();
+        $execution->setPayerId($input['PayerID']);
+        /**Execute the payment **/
+        $result = $payment->execute($execution, $this->_api_context);
+
+        if ($result->getState() == 'approved') {
+
+
+
+            $resp = json_decode($payment, true);
+
             $cart = Session::get('cart');
-        } else {
-            return redirect($cancel_url);
-        }
 
-        if (empty($request['PayerID']) || empty($request['token'])) {
-            return redirect($cancel_url);
-        }
+            $total = 0;
+            foreach ($cart as $id => $item) {
+                $product = Product::findOrFail($id);
+                if ($product->stock < $item['qty']) {
+                    $notification = array(
+                        'messege' =>  $product->title . ' stock not available',
+                        'alert' => 'error'
+                    );
+                    return redirect()->back()->with('notification', $notification);
+                }
+                $total  += $product->current_price * $item['qty'];
+            }
 
-        $transaction = $this->gateway->completePurchase(array(
-            'payer_id' => $request['PayerID'],
-            'transactionReference' => $request['paymentId'],
-        ));
+            if ($paypal_data['shipping_charge'] != 0) {
+                $shipping = Shipping::where('cost', $paypal_data['shipping_charge'])->first();
+                $shipping_charge = $shipping->cost;
+            } else {
+                $shipping_charge = 0;
+            }
 
-        $response = $transaction->send();
+            $total = round($total + $shipping_charge, 2);
 
-        if ($response->isSuccessful()) {
-            $order_data = Session::get('order_data');
-            $input = Session::get('input');
 
-            $order = new ProductOrder();
-            $order['user_id'] = $order_data['user_id'];
-            $order['billing_name'] = $order_data['billing_name'];
-            $order['billing_email'] = $order_data['billing_email'];
-            $order['billing_address'] = $order_data['billing_address'];
-            $order['billing_city'] = $order_data['billing_city'];
-            $order['billing_country'] = $order_data['billing_country'];
-            $order['billing_number'] = $order_data['billing_number'];
-            $order['billing_zip'] = $order_data['billing_zip'];
+         
 
-            $order['shipping_name'] = $order_data['shipping_name'];
-            $order['shipping_email'] = $order_data['shipping_email'];
-            $order['shipping_address'] = $order_data['shipping_address'];
-            $order['shipping_city'] = $order_data['shipping_city'];
-            $order['shipping_country'] = $order_data['shipping_country'];
-            $order['shipping_number'] = $order_data['shipping_number'];
-            $order['shipping_zip'] = $order_data['shipping_zip'];
+            $order = new ProductOrder;
 
-            $order['total'] = $order_data['total'];
-            $order['shipping_charge'] = $order_data['shipping_charge'];
-            $order['method'] = $order_data['method'];
-            $order['currency_code'] = $order_data['currency_code'];
+
+            $order->billing_name = $paypal_data['billing_name'];
+            $order->billing_email = $paypal_data['billing_email'];
+            $order->billing_address = $paypal_data['billing_address'];
+            $order->billing_city = $paypal_data['billing_city'];
+            $order->billing_country = $paypal_data['billing_country'];
+            $order->billing_number = $paypal_data['billing_number'];
+            $order->billing_zip = $paypal_data['billing_zip'];
+
+            $order->shipping_name = $paypal_data['shipping_name'];
+            $order->shipping_email = $paypal_data['shipping_email'];
+            $order->shipping_address = $paypal_data['shipping_address'];
+            $order->shipping_city = $paypal_data['shipping_city'];
+            $order->shipping_country = $paypal_data['shipping_country'];
+            $order->shipping_number = $paypal_data['shipping_number'];
+            $order->shipping_zip = $paypal_data['shipping_zip'];
+
+
+            $order->total = round($order_data['order_amount'], 2);
+            $order->shipping_charge = round($shipping_charge, 2);
+            $order->method = 'Paypal';
+            $order->currency_code = 'USD';
             $order['order_number'] = $order_data['order_number'];
-            $order['payment_status'] = $order_data['payment_status'];
-            $order['txnid'] = $order_data['txnid'];
-            $order['charge_id'] = $order_data['charge_id'];
+            $order['payment_status'] = "Completed";
+            $order['txnid'] = $resp['transactions'][0]['related_resources'][0]['sale']['id'];
+            $order['charge_id'] = $request->paymentId;
+            $order['user_id'] = Auth::user()->id;
+            $order['method'] = 'Paypal';
+
             $order->save();
             $order_id = $order->id;
 
@@ -289,7 +332,7 @@ class PaypalController extends Controller
                 ]);
             }
 
-            foreach ($carts as $id => $item) {
+            foreach ($cart as $id => $item) {
                 $product = Product::findOrFail($id);
                 $stock = $product->stock - $item['qty'];
                 Product::where('id', $id)->update([
@@ -300,7 +343,7 @@ class PaypalController extends Controller
             $fileName = Str::random(4) . time() . '.pdf';
             $path = 'assets/front/invoices/product/' . $fileName;
             $data['order']  = $order;
-            $pdf = Pdf::loadView('pdf.product', $data)->save($path);
+            $pdf = PDF::loadView('pdf.product', $data)->save($path);
 
 
             ProductOrder::where('id', $order_id)->update([
@@ -361,16 +404,14 @@ class PaypalController extends Controller
                 }
             }
 
-            Session::forget('cart');
+
+            Session::forget('paypal_data');
             Session::forget('order_data');
-            Session::forget('input');
+            Session::forget('paypal_payment_id');
+            Session::forget('cart');
+
             return redirect($success_url);
         }
-
-        $notification = array(
-            'messege' => 'Payment Cancelled.',
-            'alert' => 'error'
-        );
-        return redirect()->back()->with('notification', $notification);
+        return redirect($cancel_url);
     }
 }

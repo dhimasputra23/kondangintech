@@ -39,7 +39,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            {{-- <div class="form-group row">
                                 <label class="col-sm-2 control-label">{{ __('Icon') }}<span class="text-danger">*</span></label>
 
                                 <div class="col-sm-10">
@@ -54,6 +54,13 @@
                                     <p class="help-block text-info">{{ __('Upload 65X65 (Pixel) Size image for best quality.
                                         Only jpg, jpeg, png image is allowed.') }}
                                     </p>
+                                </div>
+                            </div> --}}
+                            <div class="form-group row">
+                                <label for="icon" class="col-sm-2 control-label">{{ __('Icon') }}<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="icon" placeholder="{{ __('Enter Fact Icon') }}">
                                 </div>
                             </div>
                             <div class="form-group row">

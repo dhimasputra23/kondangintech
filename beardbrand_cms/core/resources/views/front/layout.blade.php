@@ -337,7 +337,7 @@
 
 	{{-- Cookie alert dialog start --}}
 	@if ($setting->is_cooki_alert == 1)
-		@include('cookie-consent::index')
+		@include('cookieConsent::index')
 	@endif
 	{{-- Cookie alert dialog end --}}
 

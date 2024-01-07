@@ -25,8 +25,15 @@ Route::get('login', function () {
 =======================================================*/
 
 Route::group(['middleware' => 'setlang'], function () {
-
+    /* Start Kondangin Tech Route */
     Route::get('/', 'Front\FrontendController@index')->name('front.index');
+    Route::get('/blog', 'Front\FrontendController@blogs')->name('front.blogs');
+    Route::post('/newsletter/store', 'Admin\NewsletterController@store')->name('front.newsletter');
+    Route::post('/contact/submit', 'Front\FrontendController@contactSubmit')->name('front.contact.submit');
+    /* End Kondangin Tech Route */
+
+
+    /* Route::get('/', 'Front\FrontendController@index')->name('front.index');
     Route::get('/faq', 'Front\FrontendController@faq')->name('front.faq');
     Route::get('/about', 'Front\FrontendController@about')->name('front.about');
     Route::get('/service', 'Front\FrontendController@service')->name('front.service');
@@ -64,9 +71,7 @@ Route::group(['middleware' => 'setlang'], function () {
     Route::get('/package/paypal/return', 'Payment\Package\PaypalController@payreturn')->name('package.payment.return');
     Route::get('/package/paypal/notify', 'Payment\Package\PaypalController@notify')->name('package.payment.notify');
     Route::post('/package/stripe/submit', 'Payment\Package\StripeController@store')->name('package.stripe.submit');
-    Route::get('/package/stripe/redirect', 'Payment\Package\StripeController@paymentRedirect')->name('stripe.package.redirect');
-
-
+  
 
 
     // Pay bil payment gateway route
@@ -75,7 +80,6 @@ Route::group(['middleware' => 'setlang'], function () {
     Route::get('/paybill/paypal/return', 'Payment\Paybill\PaypalController@payreturn')->name('paybill.payment.return');
     Route::get('/paybill/paypal/notify', 'Payment\Paybill\PaypalController@notify')->name('paybill.payment.notify');
     Route::post('/paybill/stripe/submit', 'Payment\Paybill\StripeController@store')->name('paybill.stripe.submit');
-    Route::get('/paybill/stripe/redirect', 'Payment\Paybill\StripeController@paymentRedirect')->name('stripe.paybill.redirect');
 
 
     // product payment gateway route
@@ -84,8 +88,7 @@ Route::group(['middleware' => 'setlang'], function () {
     Route::get('/product/paypal/return', 'Payment\Product\PaypalController@payreturn')->name('product.payment.return');
     Route::get('/product/paypal/notify', 'Payment\Product\PaypalController@notify')->name('product.payment.notify');
     Route::post('/product/stripe/submit', 'Payment\Product\StripeController@store')->name('product.stripe.submit');
-    Route::get('/product/stripe/redirect', 'Payment\Product\StripeController@paymentRedirect')->name('stripe.product.redirect');
-
+   
 
     Route::prefix('user')->group(function () {
 
@@ -120,7 +123,7 @@ Route::group(['middleware' => 'setlang'], function () {
         Route::get('/product-orders', 'User\UserController@product_order')->name('user.product.order');
         Route::get('/product-order/{id}', 'User\UserController@product_order_details')->name('user.product.orderDetails');
     });
-
+ */
 
 });
 
@@ -183,7 +186,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
     Route::get('register/user/details/{id}','Admin\RegisterUserController@view')->name('register.user.view');
     Route::get('register/user/package-buy','Admin\RegisterUserController@package_buy')->name('register.user.package_buy');
     Route::get('register/user/package-not-buy','Admin\RegisterUserController@package_not_buy')->name('register.user.package_not_buy');
-    Route::post('register/user/{id}','Admin\RegisterUserController@delete')->name('register.user.delete');
 
     // Admin Cookie Alert Routes
     Route::get('/cookie-alert', 'Admin\SettingController@cookiealert')->name('admin.cookie.alert');
@@ -213,6 +215,37 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
     Route::get('/about/edit/{id}/', 'Admin\AboutController@edit')->name('admin.about.edit');
     Route::post('/about/update/{id}/', 'Admin\AboutController@update')->name('admin.about.update');
     Route::post('/about/aboutcontent/{id}/', 'Admin\AboutController@aboutcontent')->name('admin.aboutcontent.update');
+
+    //Hero Route
+    Route::get('/hero', 'Admin\HeroController@hero')->name('admin.hero');
+    Route::post('/hero/herocontent/{id}/', 'Admin\HeroController@herocontent')->name('admin.herocontent.update');
+
+    //Value Route
+    Route::get('/value', 'Admin\ValueController@value')->name('admin.value');
+    Route::get('/value/add', 'Admin\ValueController@add')->name('admin.value.add');
+    Route::post('/value/store', 'Admin\ValueController@store')->name('admin.value.store');
+    Route::post('/value/delete/{id}/', 'Admin\ValueController@delete')->name('admin.value.delete');
+    Route::get('/value/edit/{id}/', 'Admin\ValueController@edit')->name('admin.value.edit');
+    Route::post('/value/update/{id}/', 'Admin\ValueController@update')->name('admin.value.update');
+    Route::post('/value/valuecontent/{id}/', 'Admin\ValueController@valuecontent')->name('admin.valuecontent.update');
+
+    //Feature Route
+    Route::get('/feature-1', 'Admin\FeatureController@feature1')->name('admin.feature1');
+    Route::post('/feature-1/featurecontent/{id}/', 'Admin\FeatureController@feature1content')->name('admin.feature1content.update');
+    Route::get('/feature-2', 'Admin\FeatureController@feature2')->name('admin.feature2');
+    Route::get('/feature-2/add', 'Admin\FeatureController@feature2add')->name('admin.feature2.add');
+    Route::post('/feature-2/store', 'Admin\FeatureController@feature2store')->name('admin.feature2.store');
+    Route::post('/feature-2/delete/{id}/', 'Admin\FeatureController@feature2delete')->name('admin.feature2.delete');
+    Route::get('/feature-2/edit/{id}/', 'Admin\FeatureController@feature2edit')->name('admin.feature2.edit');
+    Route::post('/feature-2/update/{id}/', 'Admin\FeatureController@feature2update')->name('admin.feature2.update');
+    Route::post('/feature-2/featurecontent/{id}/', 'Admin\FeatureController@feature2content')->name('admin.feature2content.update');
+    Route::get('/feature-3', 'Admin\FeatureController@feature3')->name('admin.feature3');
+    Route::get('/feature-3/add', 'Admin\FeatureController@feature3add')->name('admin.feature3.add');
+    Route::post('/feature-3/store', 'Admin\FeatureController@feature3store')->name('admin.feature3.store');
+    Route::post('/feature-3/delete/{id}/', 'Admin\FeatureController@feature3delete')->name('admin.feature3.delete');
+    Route::get('/feature-3/edit/{id}/', 'Admin\FeatureController@feature3edit')->name('admin.feature3.edit');
+    Route::post('/feature-3/update/{id}/', 'Admin\FeatureController@feature3update')->name('admin.feature3.update');
+    Route::post('/feature-3/featurecontent/{id}/', 'Admin\FeatureController@feature3content')->name('admin.feature3content.update');
 
     // Package Route
     Route::get('/package', 'Admin\PackagController@package')->name('admin.package');
@@ -267,6 +300,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:admin']], function () 
     Route::get('/funfact/edit/{id}/', 'Admin\FunfactController@edit')->name('admin.funfact.edit');
     Route::post('/funfact/update/{id}/', 'Admin\FunfactController@update')->name('admin.funfact.update');
     Route::post('/funfact/funfactcontent/{id}/', 'Admin\FunfactController@funfactcontent')->name('admin.funfactcontent.update');
+
+    // Clients Route
+    Route::get('/clients', 'Admin\ClientsController@clients')->name('admin.clients');
+    Route::get('/clients/add', 'Admin\ClientsController@add')->name('admin.clients.add');
+    Route::post('/clients/store', 'Admin\ClientsController@store')->name('admin.clients.store');
+    Route::post('/clients/delete/{id}/', 'Admin\ClientsController@delete')->name('admin.clients.delete');
+    Route::get('/clients/edit/{id}/', 'Admin\ClientsController@edit')->name('admin.clients.edit');
+    Route::post('/clients/update/{id}/', 'Admin\ClientsController@update')->name('admin.clients.update');
+    Route::post('/clients/clientscontent/{id}/', 'Admin\ClientsController@clientscontent')->name('admin.clientscontent.update');
 
     // Media Zone Route
     Route::get('/media', 'Admin\MediaController@media')->name('admin.media');

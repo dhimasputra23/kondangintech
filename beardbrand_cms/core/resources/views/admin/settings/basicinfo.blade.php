@@ -133,7 +133,7 @@
                                 <div class="col-sm-10">
                                     <img class="mb-3 show-img img-demo" src="
                                     @if($commoninfo->fav_icon)
-                                    {{ asset('assets/front/img/'.$commoninfo->fav_icon) }}
+                                    {{ asset('assets/kondangintech-landing/img/'.$commoninfo->fav_icon) }}
                                     @else
                                     {{ asset('assets/admin/img/img-demo.jpg') }}
                                     @endif"
@@ -154,13 +154,32 @@
                                 <div class="col-sm-10">
                                     <img class="mb-3 show-img img-demo" src="
                                     @if($commoninfo->header_logo)
-                                    {{ asset('assets/front/img/'.$commoninfo->header_logo) }}
+                                    {{ asset('assets/kondangintech-landing/img/'.$commoninfo->header_logo) }}
                                     @else
                                     {{ asset('assets/admin/img/img-demo.jpg') }}
                                     @endif" alt="">
                                     <div class="custom-file">
                                         <label class="custom-file-label" for="header_logo">Choose New Image</label>
                                         <input type="file" class="custom-file-input up-img" name="header_logo" id="header_logo">
+                                    </div>
+                                    <p class="help-block text-info">{{ __('Upload 150X40 (Pixel) Size image for best quality.
+                                        Only jpg, jpeg, png image is allowed.') }}
+                                    </p>
+                                </div>
+
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 control-label">{{ __('Company Logo') }} <span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <img class="mb-3 show-img img-demo" width="50%" src="
+                                    @if($commoninfo->company_logo)
+                                    {{ asset('assets/kondangintech-landing/img/'.$commoninfo->company_logo) }}
+                                    @else
+                                    {{ asset('assets/admin/img/img-demo.jpg') }}
+                                    @endif" alt="">
+                                    <div class="custom-file">
+                                        <label class="custom-file-label" for="company_logo">Choose New Image</label>
+                                        <input type="file" class="custom-file-input up-img" name="company_logo" id="company_logo">
                                     </div>
                                     <p class="help-block text-info">{{ __('Upload 150X40 (Pixel) Size image for best quality.
                                         Only jpg, jpeg, png image is allowed.') }}

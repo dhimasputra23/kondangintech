@@ -14,6 +14,7 @@ use App\Service;
 use App\Billpaid;
 use App\Language;
 use App\Bcategory;
+use App\Client;
 use App\Daynamicpage;
 use App\Mediazone;
 use App\Emailsetting;
@@ -21,6 +22,8 @@ use App\Offerprovide;
 use App\Packageorder;
 use App\Sectiontitle;
 use App\Entertainment;
+use App\FeatureSecond;
+use App\FeatureThird;
 use App\Funfact;
 use App\PaymentGatewey;
 use App\Helpers\MailSend;
@@ -28,6 +31,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Testimonial;
+use App\Value;
 use Illuminate\Support\Facades\Auth;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -37,7 +41,7 @@ class FrontendController extends Controller
 
 
     // Home Page Funtions
-    public function index(){
+    /* public function index(){
         if (session()->has('lang')) {
             $currlang = Language::where('code', session()->get('lang'))->first();
         } else {
@@ -56,7 +60,7 @@ class FrontendController extends Controller
         
         
         return view('front.index', $data);
-    }
+    } */
 
    // Email Sends  Funtions
     public function sendmail(Request $request) {
@@ -232,14 +236,14 @@ class FrontendController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
-            'phone' => 'required|numeric',
+            'subject' => 'required|string',
             'message' => 'required|string',
         ]);
        
         // Login Section
         $name = $request->name;
         $fromemail = $request->email;
-        $number = $request->phone;
+        $subject = $request->subject;
         $mail = new PHPMailer(true);
         $em = Emailsetting::first();
         if ($em->is_smtp == 1) {
@@ -258,8 +262,8 @@ class FrontendController extends Controller
 
                 // Content
                 $mail->isHTML(true);
-                $mail->Subject = "User message from contact page";
-                $mail->Body    = "Name: ".$name."</br>Email: ".$fromemail."</br>Phone: ".$number."</br>Message: ".$request->message;
+                $mail->Subject = $subject;
+                $mail->Body    = "Name: ".$name."</br>Email: ".$fromemail."</br>Message: ".$request->message;
 
                 $mail->send();
             } catch (Exception $e) {
@@ -274,12 +278,12 @@ class FrontendController extends Controller
 
                 // Content
                 $mail->isHTML(true);
-                $mail->Subject = "User message from contact page";
-                $mail->Body    = "Name: ".$name."</br>Email: ".$fromemail."</br>Phone: ".$number."</br>Message: ".$request->message;
+                $mail->Subject = $subject;
+                $mail->Body    = "Name: ".$name."</br>Email: ".$fromemail."</br>Message: ".$request->message;
 
                 $mail->send();
             } catch (Exception $e) {
-                // die($e->getMessage());
+                die($e->getMessage());
             }
         }
 
@@ -312,7 +316,7 @@ class FrontendController extends Controller
 
 
     // Blog Page  Funtion
-    public function blogs(Request $request){
+    /* public function blogs(Request $request){
 
         if (session()->has('lang')) {
             $currlang = Language::where('code', session()->get('lang'))->first();
@@ -345,7 +349,7 @@ class FrontendController extends Controller
                         ->orderBy('id', 'DESC')->paginate(6);
 
         return view('front.blogs', compact('blogs', 'bcategories', 'latestblogs'));
-    }
+    } */
 
     // Blog Details  Funtion
     public function blogdetails($slug) {
@@ -391,4 +395,69 @@ class FrontendController extends Controller
         return redirect()->route('front.index');
     }
 
+
+    /* Start Kondangin Tech Front Controller */
+    // Home Page Funtions
+    public function index(){
+        if (session()->has('lang')) {
+            $currlang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currlang = Language::where('is_default', 1)->first();
+        }
+       
+        $data['sliders'] = Slider::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['abouts'] = About::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['values'] = Value::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['featuresSecond'] = FeatureSecond::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['featuresThird'] = FeatureThird::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['sectionInfo'] = Sectiontitle::where('language_id', $currlang->id)->first();
+        $data['plans'] = Package::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['offers'] = Offerprovide::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['services'] = Service::where('status',1)->where('language_id', $currlang->id)->limit(6)->get();
+        $data['blogs'] = Blog::where('status', 1)->where('language_id', $currlang->id)->orderBy('id', 'DESC')->limit(3)->get();
+        $data['testimonials'] = Testimonial::where('language_id', $currlang->id)->orderBy('id', 'DESC')->get();
+        $data['funfacts'] = Funfact::where('language_id', $currlang->id)->orderBy('id', 'DESC')->get();
+        $data['faqs'] = Faq::where('status',1)->where('language_id', $currlang->id)->get();
+        $data['teams'] = Team::where('status',1)->where('language_id', $currlang->id)->orderBy('id', 'DESC')->get();
+        $data['clients'] = Client::where('language_id', $currlang->id)->orderBy('id', 'DESC')->get();
+        
+        
+        return view('kondangintech-landing.index', $data);
+    }
+    public function blogs(Request $request){
+
+        if (session()->has('lang')) {
+            $currlang = Language::where('code', session()->get('lang'))->first();
+        } else {
+            $currlang = Language::where('is_default', 1)->first();
+        }
+
+        
+        $category = $request->category;
+        $catid = null;
+        if (!empty($category)) {
+            $data['category'] = Bcategory::where('slug', $category)->firstOrFail();
+            $catid = $data['category']->id;
+        }
+
+        $term = $request->term;
+        $month = $request->month;
+        $year = $request->year;
+        $bcategories = Bcategory::where('status', 1)->where('language_id', $currlang->id)->orderBy('id', 'DESC')->get();
+
+        $latestblogs = Blog::where('status', 1)->where('language_id', $currlang->id)->orderBy('id', 'DESC')->limit(4)->get();
+
+        $blogs = Blog::where('status', 1)->where('language_id', $currlang->id)
+                        ->when($catid, function ($query, $catid) {
+                            return $query->where('bcategory_id', $catid);
+                        })
+                        ->when($term, function ($query, $term) {
+                            return $query->where('title', 'like', '%'.$term.'%');
+                        })
+                        ->orderBy('id', 'DESC')->paginate(6);
+
+        return view('kondangintech-landing.blog', compact('blogs', 'bcategories', 'latestblogs'));
+    }
+    /* End Kondangin Tech Front Controller */
+    
 }

@@ -110,7 +110,7 @@
                             <tr>
                                 <td>{{ ++$id }}</td>
                                 <td>
-                                    <img class="w-80" src="{{ asset('assets/front/img/'.$blog->main_image) }}" alt="">
+                                    <img class="w-80" src="{{ asset('assets/kondangintech-landing/img/'.$blog->main_image) }}" alt="">
                                 </td>
                                 <td>
                                     {{ $blog->title }}

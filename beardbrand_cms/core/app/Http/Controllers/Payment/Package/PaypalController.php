@@ -8,17 +8,16 @@ use App\Package;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Packageorder;
-use Omnipay\Omnipay;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade as PDF;
 use App\Emailsetting;
 use Carbon\Carbon;
 use App\PaymentGatewey;
 use App\Setting;
 use App\User;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 use PayPal\{
     Api\Item,
     Api\Payer,
@@ -44,22 +43,17 @@ class PaypalController extends Controller
     {
         $data = PaymentGatewey::whereKeyword('paypal')->first();
         $paydata = $data->convertAutoData();
+        $paypal_conf = Config::get('paypal');
+        $paypal_conf['client_id'] = $paydata['client_id'];
+        $paypal_conf['secret'] = $paydata['client_secret'];
+        $paypal_conf['settings']['mode'] = $paydata['sandbox_check'] == 1 ? 'sandbox' : 'live';
 
-//        $paypal_conf = Config::get('paypal');
-//        $paypal_conf['client_id'] = $paydata['client_id'];
-//        $paypal_conf['secret'] = $paydata['client_secret'];
-//        $paypal_conf['settings']['mode'] = $paydata['sandbox_check'] == 1 ? 'sandbox' : 'live';
-//
-//        $this->_api_context = new ApiContext(new OAuthTokenCredential(
-//            $paypal_conf['client_id'],
-//            $paypal_conf['secret']
-//        ));
-//
-//        $this->_api_context->setConfig($paypal_conf['settings']);
-        $this->gateway = Omnipay::create('PayPal_Rest');
-        $this->gateway->setClientId($paydata['client_id']);
-        $this->gateway->setSecret($paydata['client_secret']);
-        $this->gateway->setTestMode(true);
+        $this->_api_context = new ApiContext(new OAuthTokenCredential(
+            $paypal_conf['client_id'],
+            $paypal_conf['secret']
+        ));
+
+        $this->_api_context->setConfig($paypal_conf['settings']);
     }
 
 
@@ -75,49 +69,70 @@ class PaypalController extends Controller
         $title = "Package name: ".$request->packagename." & ".\Carbon\Carbon::now()->format('M Y').", this month bill has paid.";
 
 
+        $order['order_number'] = Str::random(4) . time();
+        $order['order_amount'] = $request->packageprice;
+
 
         $cancel_url = action('Payment\Package\PaypalController@paycancle');
         $notify_url = route('package.payment.notify');
+        $total  = $request->packageprice;
 
-        $packageId = $request->packageid;
-        $package = Package::find($packageId);
+        $payer = new Payer();
+        $payer->setPaymentMethod('paypal');
+        $item_1 = new Item();
+        $item_1->setName($title)
+            ->setCurrency('USD')
+            ->setQuantity(1)
+            ->setPrice($total);
+        $item_list = new ItemList();
+        $item_list->setItems(array($item_1));
+        $amount = new Amount();
+        $amount->setCurrency('USD')
+            ->setTotal($total);
+        $transaction = new Transaction();
+        $transaction->setAmount($amount)
+            ->setItemList($item_list)
+            ->setDescription($title . ' Via Paypal');
+        $redirect_urls = new RedirectUrls();
+        $redirect_urls->setReturnUrl($notify_url)
+            ->setCancelUrl($cancel_url);
+        $payment = new Payment();
+        $payment->setIntent('Sale')
+            ->setPayer($payer)
+            ->setRedirectUrls($redirect_urls)
+            ->setTransactions(array($transaction));
 
-        $totalPackagePrice = 0;
-
-        if($package->discount_price){
-            $totalPackagePrice = $package->discount_price;
-        }else{
-            $totalPackagePrice = $package->price;
-        }
-
-        Session::put('totalPackagePrice', $totalPackagePrice);
-        Session::put('activeBuyId', $packageId);
-
-        try{
-            $response = $this->gateway->purchase(array(
-                'amount' => $totalPackagePrice,
-                'currency' => 'USD',
-                'returnUrl' => $notify_url,
-                'cancelUrl' => $cancel_url
-            ))->send();
-
-            if ($response->isRedirect()) {
-                if ($response->redirect()) {
-                    /** redirect to paypal **/
-                    return Redirect::away($response->redirect());
-                }else{
-                    return $response->getMessage();
-                }
-            }
-        }catch (\Throwable $th){
+        try {
+            $payment->create($this->_api_context);
+        } catch (\PayPal\Exception\PPConnectionException $ex) {
             $notification = array(
-                'messege' => 'Payment Cancelled.',
+                'messege' => $ex->getMessage(),
                 'alert' => 'error'
             );
             return redirect()->back()->with('notification', $notification);
         }
+        foreach ($payment->getLinks() as $link) {
+            if ($link->getRel() == 'approval_url') {
+                $redirect_url = $link->getHref();
+                break;
+            }
+        }
+        Session::put('order_data', $order);
+        Session::put('paypal_payment_id', $payment->getId());
+        if (isset($redirect_url)) {
+            return Redirect::away($redirect_url);
+        }
         $notification = array(
-            'messege' => 'Payment Cancelled.',
+            'messege' => 'Unknown error occurred',
+            'alert' => 'error'
+        );
+        return redirect()->back()->with('notification', $notification);
+
+        if (isset($redirect_url)) {
+            return Redirect::away($redirect_url);
+        }
+        $notification = array(
+            'messege' => 'Unknown error occurred',
             'alert' => 'error'
         );
         return redirect()->back()->with('notification', $notification);
@@ -134,48 +149,40 @@ class PaypalController extends Controller
 
     public function payreturn()
     {
-        return view('front.success.package');
+        return view('front.index');
     }
 
 
     public function notify(Request $request)
     {
-
-        $success_url = action('Payment\Package\PaypalController@payreturn');
+        $order_data = Session::get('order_data');
         $cancel_url = action('Payment\Package\PaypalController@paycancle');
-
-        $totalPackagePrice = Session::get('totalPackagePrice');
-        $activeBuyId = Session::get('activeBuyId');
-
-        if (empty($request['PayerID']) || empty($request['token'])) {
+        $input = $request->all();
+        $payment_id = Session::get('paypal_payment_id');
+        if (empty($input['PayerID']) || empty($input['token'])) {
             return redirect($cancel_url);
         }
-        $transaction = $this->gateway->completePurchase(array(
-            'payer_id' => $request['PayerID'],
-            'transactionReference' => $request['paymentId'],
-        ));
-        $response = $transaction->send();
-
-
-        if ($response->isSuccessful()) {
-
+        $payment = Payment::get($payment_id, $this->_api_context);
+        $execution = new PaymentExecution();
+        $execution->setPayerId($input['PayerID']);
+        $result = $payment->execute($execution, $this->_api_context);
+        if ($result->getState() == 'approved') {
+            $resp = json_decode($payment, true);
             $package_data = Session::get('package_data');
-
             $already_purchased = Packageorder::where('user_id', Auth::user()->id)->first();
-
             if($already_purchased){
                 $order = $already_purchased;
             }else{
                 $order  = new Packageorder();
             }
-            $order['package_cost'] =  $totalPackagePrice;
+            $order['package_cost'] =  $package_data['packageprice'];
             $order['currency_code'] = 'USD';
             $order['currency_sign'] = "$";
-            $order['attendance_id'] = Str::random(4) . time();
+            $order['attendance_id'] = $order_data['order_number'];
             $order['payment_status'] = "Completed";
-            $order['txn_id'] = Str::random(12);
+            $order['txn_id'] = $resp['transactions'][0]['related_resources'][0]['sale']['id'];
             $order['user_id'] = Auth::user()->id;
-            $order['package_id'] = $activeBuyId;
+            $order['package_id'] = $package_data['packageid'];
             $order['method'] = 'Paypal';
             $order['status'] = 0;
             $order->save();
@@ -185,14 +192,14 @@ class PaypalController extends Controller
 
             $paybill  = new Billpaid();
 
-            $paybill['package_cost'] =  $totalPackagePrice;
+            $paybill['package_cost'] =  $package_data['packageprice'];
             $paybill['currency_code'] = 'USD';
             $paybill['currency_sign'] = "$";
-            $paybill['attendance_id'] =  Str::random(4) . time();
+            $paybill['attendance_id'] = $order_data['order_number'];
             $paybill['payment_status'] = "Completed";
-            $paybill['txn_id'] = Str::random(12);
+            $paybill['txn_id'] = $resp['transactions'][0]['related_resources'][0]['sale']['id'];
             $paybill['user_id'] = Auth::user()->id;
-            $paybill['package_id'] = $activeBuyId;
+            $paybill['package_id'] = $package_data['packageid'];
             $paybill['yearmonth'] = \Carbon\Carbon::now()->format('m-Y');
             $paybill['fulldate'] = \Carbon\Carbon::now()->format('M d, Y');
             $paybill['method'] = 'Paypal';
@@ -211,7 +218,7 @@ class PaypalController extends Controller
             $data['bill'] = $paybill;
             $data['package'] = $package;
             $data['user'] = Auth::user();
-            $pdf = Pdf::loadView('pdf.package', $data)->save($path);
+            PDF::loadView('pdf.package', $data)->save($path);
 
             Packageorder::where('id', $order_id)->update([
                 'invoice_number' => $fileName

@@ -64,7 +64,7 @@
                                 <div class="col-sm-10">
                                     <img class="mw-400 mb-3 show-img img-demo" src="
                                     @if($saectiontitle->testimonial_bg)
-                                    {{ asset('assets/front/img/'.$saectiontitle->testimonial_bg) }}
+                                    {{ asset('assets/kondangintech-landing/img/'.$saectiontitle->testimonial_bg) }}
                                     @else
                                     {{ asset('assets/admin/img/img-demo.jpg') }}
                                     @endif" alt="">
@@ -127,7 +127,7 @@
                         <tr>
                             <td>{{ ++$id }}</td>
                             <td>
-                                <img class="w-80" src="{{ asset('assets/front/img/'.$testimonial->image) }}" alt="">
+                                <img class="w-80" src="{{ asset('assets/kondangintech-landing/img/'.$testimonial->image) }}" alt="">
                             </td>
                             <td>{{ $testimonial->name }}</td>
                             <td>{{ $testimonial->position}}</td>

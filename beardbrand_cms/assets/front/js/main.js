@@ -76,9 +76,9 @@ $(function ($) {
             let plan_check = $(this).attr('id');
             if(plan_check ==  'Paypal'){
                 $('#plan_order_submit').attr('action',$('#plan_paypal').val());
-             //   $('.payment_show_check').addClass('d-none');
+                $('.payment_show_check').addClass('d-none');
             }else{
-              //  $('.payment_show_check').removeClass('d-none');
+                $('.payment_show_check').removeClass('d-none');
                 $('#plan_order_submit').attr('action',$('#plan_stripe').val());
             }
         });
@@ -91,12 +91,12 @@ $(function ($) {
             $(this).addClass('active');
             if(gateway_check == 'Paypal'){
                 $('#payment_gateway_check').attr('action',$('#product_paypal').val());
-               // $('.payment_show_check').addClass('d-none');
-               // $('.payment_show_check input').prop('required',false);
+                $('.payment_show_check').addClass('d-none');
+                $('.payment_show_check input').prop('required',false);
             }else{
                 $('#payment_gateway_check').attr('action',$('#product_stripe').val());
-               // $('.payment_show_check').removeClass('d-none');
-              //  $('.payment_show_check input').prop('required',true);
+                $('.payment_show_check').removeClass('d-none');
+                $('.payment_show_check input').prop('required',true);
             }
             $('#payment_gateway').val($(this).attr('data-href'));
         })

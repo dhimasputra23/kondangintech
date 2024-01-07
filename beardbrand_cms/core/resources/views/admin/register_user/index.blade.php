@@ -56,13 +56,6 @@
                                         <td>{{$user->address}}</td>
                                         <td>
                                             <a  href="{{route('register.user.view',$user->id)}}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
-                                            <form  id="deleteform" class="d-inline-block" action="{{ route('register.user.delete',$user->id) }}" method="post">
-                                                @csrf
-                                                <input type="hidden" name="id" value="{{ $user->id }}">
-                                                <button type="submit" class="btn btn-danger btn-sm" id="delete">
-                                                    <i class="fas fa-trash"></i>{{ __('Delete') }}
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

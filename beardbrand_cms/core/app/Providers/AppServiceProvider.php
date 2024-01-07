@@ -3,6 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Setting;
+use App\Admin;
+use App\Daynamicpage;
+use App\Social;
+use App\Language;
+use App\SectionTitle;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,16 +23,59 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+
     /**
      * Bootstrap any application services.
      *
      * @return void
      */
+
     public function boot()
     {
-        if (!file_exists('core/storage/installed') && !request()->is('install') && !request()->is('install/*')) {
-            header("Location: install/");
-            exit;
-        }
+        View::composer('*', function ($view) {
+            $adminprofile = Admin::first();
+            $socials = Social::get();
+            $commonsetting = Setting::where('id', 1)->first();
+
+
+            $lang = Language::where('is_default', '1')->first();
+            $setting = Setting::where('language_id', $lang->id)->first();
+
+            
+            
+                if (session()->has('lang')) {
+                $currentLang = Language::where('code', session()->get('lang'))->first();
+
+                $setting = Setting::where('language_id', $currentLang->id)->first();
+                $front_dynamic_pages = Daynamicpage::where('status', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->get();
+
+                $view->with('setting', $setting);
+                $view->with('currentLang', $currentLang);
+                $view->with('front_dynamic_pages', $front_dynamic_pages );
+
+              } else {
+                $currentLang = Language::where('is_default', 1)->first();
+
+                $setting = Setting::where('language_id', $currentLang->id)->first();
+                $front_dynamic_pages = Daynamicpage::where('status', 1)->where('language_id', $currentLang->id)->orderBy('id', 'DESC')->get();
+
+                $view->with('setting', $setting);
+                $view->with('currentLang', $currentLang);
+                $view->with('front_dynamic_pages', $front_dynamic_pages );
+              }
+
+
+
+            $langs = Language::all();
+            $view->with('adminprofile', $adminprofile);
+            $view->with('langs', $langs );
+            $view->with('lang', $lang );
+            $view->with('socials', $socials );
+            $view->with('commonsetting', $commonsetting );
+            
+        });
     }
 }
+
+
+//basicinfo

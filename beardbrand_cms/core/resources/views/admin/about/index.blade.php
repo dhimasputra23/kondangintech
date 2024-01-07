@@ -64,7 +64,7 @@
                                 <div class="col-sm-10">
                                     <img class="w-100 mb-3 show-img img-demo" src="
                                     @if($saectiontitle->about_image)
-                                    {{ asset('assets/front/img/'.$saectiontitle->about_image) }}
+                                    {{ asset('assets/kondangintech-landing/img/'.$saectiontitle->about_image) }}
                                     @else
                                     {{ asset('assets/admin/img/img-demo.jpg') }}
                                     @endif" alt="">

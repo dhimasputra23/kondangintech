@@ -33,18 +33,45 @@ class PackagController extends Controller
 
     // Store slider Category
     public function store(Request $request){
+        
 
         $request->validate([
             'name' => 'required|max:150',
             'language_id' => 'required',
-            'speed' => 'required|numeric',
-            'time' => 'required|max:150',
+            'image' => 'mimes:jpeg,jpg,png',
+            // 'time' => 'required|max:150',
             'feature' => 'required',
-            'price' => 'required|numeric',
+            'price' => 'numeric',
+            'discount_price' => 'numeric',
+            // 'start_price' => 'numeric',
+            // 'end_price' => 'numeric',
             'status' => 'required|max:150',
         ]);
 
-        Package::create($request->all());
+        $package = new Package();
+        if($request->hasFile('image')){
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $image = time().rand().'.'.$extension;
+            $file->move('assets/kondangintech-landing/img/', $image);
+
+            $package->image = $image;
+        }
+ 
+        $package->language_id = $request->language_id;
+        $package->status = $request->status;
+        $package->name = $request->name;
+        // $package->time = $request->time;
+        $package->feature = $request->feature;
+        $package->price = $request->price;
+        $package->discount_price = $request->discount_price;
+        $package->start_price = $request->start_price;
+        $package->end_price = $request->end_price;
+        $package->save();
+
+        // Package::create($request->all());
+
+        
 
         $notification = array(
             'messege' => 'Package Added successfully!',
@@ -57,6 +84,7 @@ class PackagController extends Controller
     public function delete($id){
 
         $Package = Package::find($id);
+        @unlink('assets/kondangintech-landing/img/'. $Package->image);
         $Package->delete();
 
         return back();
@@ -77,15 +105,37 @@ class PackagController extends Controller
         $request->validate([
             'name' => 'required|max:150',
             'language_id' => 'required',
-            'speed' => 'required|numeric',
-            'time' => 'required|max:150',
+            'image' => 'mimes:jpeg,jpg,png',
+            // 'time' => 'required|max:150',
             'feature' => 'required',
-            'price' => 'required|numeric',
+            'price' => 'numeric',
+            'discount_price' => 'numeric',
+            // 'start_price' => 'numeric',
+            // 'end_price' => 'numeric',
             'status' => 'required|max:150',
         ]);
 
         $package = Package::find($id);
-        $package->update($request->all());
+        if($request->hasFile('image')){
+            @unlink('assets/kondangintech-landing/img/'. $package->image);
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $image = time().rand().'.'.$extension;
+            $file->move('assets/kondangintech-landing/img/', $image);
+
+            $package->image = $image;
+        }
+        $package->language_id = $request->language_id;
+        $package->status = $request->status;
+        $package->name = $request->name;
+        // $package->time = $request->time;
+        $package->feature = $request->feature;
+        $package->price = $request->price;
+        $package->discount_price = $request->discount_price;
+        $package->start_price = $request->start_price;
+        $package->end_price = $request->end_price;
+        $package->save();
+        
 
         $notification = array(
             'messege' => 'Package Updated successfully!',

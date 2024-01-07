@@ -117,7 +117,9 @@
                                 <th>{{ __('Name') }}</th>
                                 <th>{{ __('Price') }}</th>
                                 <th>{{ __('Discount Price') }}</th>
-                                <th>{{ __('Speed') }}</th>
+                                <th>{{ __('Start Price') }}</th>
+                                <th>{{ __('End Price') }}</th>
+                                <th>{{ __('Image') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Action') }}</th>
                             </tr>
@@ -133,17 +135,35 @@
                                     {{ $package->name }}
                                 </td>
                                 <td>
-                                    {{  Helper::showCurrency() }}{{ $package->price }}
+                                    @if($package->price)
+                                    {{  Helper::showCurrency() }}{{ number_format($package->price, 0, ',', '.') }}
+                                    @else 
+                                    <span class="badge badge-info">{{ __('No Price') }}</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($package->discount_price)
-                                    {{  Helper::showCurrency() }}{{ $package->discount_price }}
+                                    {{  Helper::showCurrency() }}{{ number_format($package->discount_price, 0, ',', '.') }}
                                     @else 
                                     <span class="badge badge-info">{{ __('No Discount') }}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    {{ $package->speed }}{{ __(' / mbps')}}
+                                    @if($package->start_price)
+                                    {{  Helper::showCurrency() }}{{ number_format($package->start_price, 0, ',', '.') }}
+                                    @else 
+                                    <span class="badge badge-info">{{ __('No Start Price') }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($package->end_price)
+                                    {{  Helper::showCurrency() }}{{ number_format($package->end_price, 0, ',', '.') }}
+                                    @else 
+                                    <span class="badge badge-info">{{ __('No End Price') }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <img src="{{ asset('assets/kondangintech-landing/img/'.$package->image) }}"   alt="" width="60">
                                 </td>
                                 <td>
                                     @if($package->status == 1)

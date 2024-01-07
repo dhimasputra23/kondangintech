@@ -54,7 +54,7 @@
                                         <label class="col-sm-2 control-label">{{ __('Image') }}<span class="text-danger">*</span></label>
         
                                         <div class="col-sm-10">
-                                            <img class="mw-400 mb-3 show-img img-demo" src="{{ asset('assets/front/img/'.$blog->main_image) }}" alt="">
+                                            <img class="mw-400 mb-3 show-img img-demo" src="{{ asset('assets/kondangintech-landing/img/'.$blog->main_image) }}" alt="">
                                             <div class="custom-file">
                                                 <label class="custom-file-label" for="main_image">{{ __('Choose New Image') }}</label>
                                                 <input type="file" class="custom-file-input up-img" name="main_image" id="main_image">

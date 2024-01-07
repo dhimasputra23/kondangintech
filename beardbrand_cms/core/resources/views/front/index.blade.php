@@ -372,9 +372,8 @@
 								</li>
 							</ul>
 								<h4 class="title">
-									{{ (mb_strlen(strip_tags(Helper::convertUtf8($blog->title))) > 50) ? mb_substr(strip_tags(Helper::convertUtf8($blog->title)), 0, 50) . '...' : strip_tags(Helper::convertUtf8($blog->title)) }}
-								</h4>
-
+									{{ (strlen(strip_tags(Helper::convertUtf8($blog->title))) > 50) ? substr(strip_tags(Helper::convertUtf8($blog->title)), 0, 50) . '...' : strip_tags(Helper::convertUtf8($blog->title)) }}
+							</h4>
 						</div>
 					</a>
 				</div>

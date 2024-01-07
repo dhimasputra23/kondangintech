@@ -39,6 +39,16 @@
                         <form class="form-horizontal" action="{{ route('admin.funfactcontent.update',  $saectiontitle->language_id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row">
+                                <label class="col-sm-2 control-label">{{ __('Funfact Title') }}<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="funfact_title" placeholder="{{ __('Funfact Title') }}" value="{{ $saectiontitle->funfact_title }}">
+                                    @if ($errors->has('funfact_title'))
+                                        <p class="text-danger"> {{ $errors->first('funfact_title') }} </p>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label class="col-sm-2 control-label">{{ __('Funfact BG Image') }} <span class="text-danger">*</span></label>
                                 <div class="col-sm-10">
                                     <img class="mw-400 mb-3 show-img img-demo" src="
@@ -105,7 +115,8 @@
                         <tr>
                             <td>{{ ++$id }}</td>
                             <td>
-                                <img  class="w-60" src="{{ asset('assets/front/img/'.$funfact->icon) }}" alt="">
+                                {{ $funfact->icon }}
+                                {{-- <img  class="w-60" src="{{ asset('assets/front/img/'.$funfact->icon) }}" alt=""> --}}
                             </td>
                             <td>{{ $funfact->name }}</td>
                             <td>{{ $funfact->value }}</td>

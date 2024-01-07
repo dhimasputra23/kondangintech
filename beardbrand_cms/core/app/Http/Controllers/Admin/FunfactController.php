@@ -33,23 +33,24 @@ class FunfactController extends Controller
 
       
         $request->validate([
-            'icon' => 'required|mimes:jpeg,jpg,png',
+            /* 'icon' => 'required|mimes:jpeg,jpg,png', */
+            'icon' => 'required|string',
             'name' => 'required|max:255',
             'value' => 'required',
         ]);
 
         $funfact = new Funfact();
 
-        if($request->hasFile('icon')){
+       /*  if($request->hasFile('icon')){
             $file = $request->file('icon');
             $extension = $file->getClientOriginalExtension();
             $icon = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $icon);
+            $file->move('assets/kondangintech-landing/img/', $icon);
 
             $funfact->icon = $icon;
-        }
+        } */
         
-
+        $funfact->icon = $request->icon;
         $funfact->language_id = $request->language_id;
         $funfact->name = $request->name;
         $funfact->value = $request->value;
@@ -75,21 +76,23 @@ class FunfactController extends Controller
         $funfact = Funfact::findOrFail($id);
 
          $request->validate([
-            'icon' => 'mimes:jpeg,jpg,png',
+            /* 'icon' => 'mimes:jpeg,jpg,png', */
+            'icon' => 'required|string',
             'name' => 'required|max:255',
             'value' => 'required',
         ]);
 
-        if($request->hasFile('icon')){
-            @unlink('assets/front/img/'. $funfact->icon);
+        /* if($request->hasFile('icon')){
+            @unlink('assets/kondangintech-landing/img/'. $funfact->icon);
             $file = $request->file('icon');
             $extension = $file->getClientOriginalExtension();
             $icon = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $icon);
+            $file->move('assets/kondangintech-landing/img/', $icon);
 
             $funfact->icon = $icon;
-        }
+        } */
 
+        $funfact->icon = $request->icon;
         $funfact->language_id = $request->language_id;
         $funfact->name = $request->name;
         $funfact->value = $request->value;
@@ -105,7 +108,7 @@ class FunfactController extends Controller
     public function delete($id){
 
         $funfact = Funfact::find($id);
-        @unlink('assets/front/img/'. $funfact->icon);
+        // @unlink('assets/kondangintech-landing/img/'. $funfact->icon);
         $funfact->delete();
 
         return back();
@@ -114,17 +117,18 @@ class FunfactController extends Controller
     public function funfactcontent(Request $request, $id){
         
         $request->validate([
+            'funfact_title' => 'required|string',
             'funfact_bg' => 'mimes:jpeg,jpg,png',
         ]);
 
         $funfact_title = Sectiontitle::where('language_id', $id)->first();
-
+        $funfact_title->$funfact_title = $request->$funfact_title;
         if($request->hasFile('offer_image')){
-            @unlink('assets/front/img/'. $funfact_title->funfact_bg);
+            @unlink('assets/kondangintech-landing/img/'. $funfact_title->funfact_bg);
             $file = $request->file('offer_image');
             $extension = $file->getClientOriginalExtension();
             $funfact_bg = time().rand().'.'.$extension;
-            $file->move('assets/front/img/', $funfact_bg);
+            $file->move('assets/kondangintech-landing/img/', $funfact_bg);
 
             $funfact_title->funfact_bg = $funfact_bg;
         }

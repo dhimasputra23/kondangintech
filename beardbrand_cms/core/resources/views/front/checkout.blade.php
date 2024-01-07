@@ -286,7 +286,7 @@
 					  </div>
 					</div>
 					<input type="hidden" value="" id="payment_gateway" name="payment_gateway" value="payment_gateway">
-				{{--	<div class="payment_show_check d-none">
+					<div class="payment_show_check d-none">
 						<div class="gd-payment-form-wrapper">
 							<div class="payment-form-wrapper-inner">
 								<div class="card willFlip" id="willFlip">
@@ -367,7 +367,7 @@
 								</div>
 							</div>
 						</div>
-				  </div>--}}
+				  </div>
 	  
 					<hr class="mb-4">
 					<button class="mybtn1" type="submit">{{ __('Place Order') }}</button>

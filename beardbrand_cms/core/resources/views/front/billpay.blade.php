@@ -140,6 +140,100 @@
 									</div>
 								</div>
 								<input type="hidden" value="" id="payment_gateway" name="payment_gateway" value="payment_gateway">
+								<div class="payment_show_check d-none">
+									<div class="gd-payment-form-wrapper">
+										<div class="payment-form-wrapper-inner">
+											<div class="card willFlip" id="willFlip">
+												<div class="front">
+														<div class="d-flex justify-content-between">
+															<img src="{{ asset('assets/front/img') }}/card/card_bank.png" width="50" style="filter: contrast(0)" height="50" alt="">
+															<img src="{{ asset('assets/front/img') }}/card/visa.png" width="50" height="50" alt="">
+														</div>
+														<div class="mt-1">
+															<div class="form-group">
+																<label for="cardNumber"></label>
+																<input type="text" class="form-control animate__animated animate__bounce animate__duration-2s" disabled readonly id="cardNumber">
+															</div>
+														</div>
+														<div class="front-bottom">
+															<div class="card-holder-content">
+																<div class="form-group">
+																	<label for="cardHolderValue">{{ __('Card Holder') }}</label>
+																	<input type="text" placeholder="FULL NAME" disabled class="cardHolder form-control animate__animated animate__bounce animate__duration-2s" id="cardHolderValue">
+																</div>
+															</div>
+															<div class="card-expires-content">
+																<div class="input-date">
+																	<label for="expiredMonth" class="text-right d-block">{{ __('Expires') }}</label>
+																	<div class="row content-date-input justify-content-end animate__animated animate__duration-2s animate__bounce">
+																		<input type="text" disabled class="cardHolder col-4 form-control" id="expiredMonth">
+																		<h4 class="mt-1 p-2 slash-text"> / </h4>
+																		<input type="text" disabled class="cardHolder col-4 form-control" id="expiredYear">
+																	</div>
+																</div>
+															</div>
+														</div>
+												</div>
+												<div class="back">
+													<div class="card-bar"></div>
+													<div class="col-md-12  back-middle">
+														<div class="form-group">
+															<label for="cardCcv" class="text-right d-block">{{ __('CVC') }}</label>
+															<input type="password" disabled class="form-control" id="cardCcv">
+														</div>
+														<img src="{{ asset('assets/front/img') }}/card/visa.png" class="float-right" width="50" height="50" alt="">
+													</div>
+												</div>
+											</div>
+											<div id="paymentmainform" class="paymentmainform" >
+												<input type="hidden" name="gateway" id="payment_id" value="">
+												<input type="hidden" name="packageprice"  value="
+												@if($packagedetails->discount_price == null)
+													{{ $packagedetails->price}}
+												@else 
+													{{ $packagedetails->discount_price }}
+												@endif
+												">
+												<input type="hidden" name="packagename"  value="{{ $packagedetails->name }}">
+												<input type="hidden" name="packageid"  value="{{ $packagedetails->id }}">
+												<div class="stripe-inner-form">
+													<div class="form-group">
+														<label for="cardInput">{{ __('Card Number') }}</label>
+														<input class="input card-input_field form-control" name="card_number" id="cardInput">
+													</div>
+													<div class="form-group">
+														<label for="cardHolder">{{ __('Card Holder') }}</label>
+														<input class="card-input_field form-control" name="fullname" id="cardHolder">
+													</div>
+													<div class="row">
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="monthInput">{{ __('Expiration Date') }}</label>
+																<select name="month" class="form-control card-input_field" id="monthInput">
+																	<option class="disabled" readonly>{{ __('Month') }}</option>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="yearInput"></label>
+																<select name="year" class="form-control card-input_field mt-2" id="yearInput">
+																	<option class="disabled" readonly>{{ __('Year') }}</option>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="cwInput">{{ __('CVC') }}</label>
+																<input type="text" name="cvc" class="form-control card-input_field" id="cwInput">
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 								<hr class="mb-4">
 								<button type="submit" class="mybtn1 submitbtn">{{ __('Submit') }}</button>
 							</div>

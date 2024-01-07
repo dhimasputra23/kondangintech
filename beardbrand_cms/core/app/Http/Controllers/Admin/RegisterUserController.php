@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\OrderItem;
-use App\Packageorder;
 use App\User;
 use App\Package;
 use App\Billpaid;
@@ -45,44 +43,16 @@ class RegisterUserController extends Controller
 
     public function userban(Request $request)
     {
+
         $user = User::findOrFail($request->user_id);
         $user->update([
             'status' => $request->status,
         ]);
 
-        $notification = array(
-            'messege' => $user->username.' status update successfully!',
-            'alert' => 'success'
-        );
-        return redirect()->back()->with('notification', $notification);
-
-    }
-
-    public function delete($id){
-        $user = User::find($id);
-        $bills = Billpaid::where('user_id', $id)->get();
-        $orderItems = OrderItem::where('user_id', $id)->get();
-        $packageOrders = Packageorder::where('user_id', $id)->get();
-
-        foreach ($bills as $bill){
-            $bill->delete();
-        }
-        foreach ($orderItems as $orderItem){
-            $orderItem->delete();
-        }
-        foreach ($packageOrders as $packageOrder){
-            $packageOrder->delete();
-        }
-
-        @unlink('assets/front/img/' . $user->photo);
-        $user->delete();
+        Session::flash('success', $user->username.' status update successfully!');
+        return back();
 
 
-        $notification = array(
-            'messege' => 'User Deleted successfully!',
-            'alert' => 'success'
-        );
-        return redirect()->back()->with('notification', $notification);
 
     }
 }
