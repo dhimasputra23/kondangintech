@@ -1,1 +1,0 @@
-# kondangintech
